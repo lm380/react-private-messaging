@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+}
+
+@font-face {
+  font-family: Lato;
+  src: '~/public/fonts/Lato-Regular.ttf';
+}
+
+#app {
+  font-family: Lato, Arial, sans-serif;
+  font-size: 14px;
+  height: 100%;
+}

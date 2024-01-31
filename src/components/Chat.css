@@ -1,0 +1,15 @@
+.left-panel {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 260px;
+  overflow-x: hidden;
+  background-color: #3f0e40;
+  color: white;
+  height: 100vh;
+}
+
+.chat-wrapper {
+  display: flex;
+  flex-direction: row;
+}
