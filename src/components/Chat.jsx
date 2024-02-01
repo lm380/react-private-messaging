@@ -59,10 +59,15 @@ export const Chat = () => {
     const handleUserDisconnected = (id) => {
       setUsers((prevUsers) => {
         return prevUsers.map((user) => {
+          let checkedUser = { ...user };
           if (user.userID === id) {
-            return { ...user, connected: false };
+            checkedUser.connected = false;
+            //If the selected user is disconnected we need to update the bound variable
+            if (user.userID === selectedUser.userID) {
+              setSelectedUser(checkedUser);
+            }
           }
-          return user;
+          return checkedUser;
         });
       });
     };
@@ -81,6 +86,7 @@ export const Chat = () => {
               messages: updatedMessages,
               hasNewMessages,
             };
+            //need to update the selected user if they're affected
             if (user.userID === selectedUser?.userID) {
               setSelectedUser(enrichedUser);
             }

@@ -1,9 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StatusIcon } from './StatusIcon';
 import './MessagePanel.css';
 
 export const MessagePanel = ({ user, submitHandler }) => {
   const [input, setInput] = useState('');
+  const [isConnected, setIsConnected] = useState(user.connected);
+
+  useEffect(() => {
+    console.log('called', user.connected);
+    setIsConnected(user.connected);
+  }, [user]);
   const updateInput = (event) => {
     setInput(event.target.value);
   };
@@ -28,7 +34,7 @@ export const MessagePanel = ({ user, submitHandler }) => {
     <>
       <div className="message-panel-wrapper">
         <div className="header">
-          <StatusIcon connected={user.connected} />
+          <StatusIcon connected={isConnected} />
           {user.username}
         </div>
 
