@@ -48,7 +48,13 @@ export const Chat = () => {
         };
         return initReactiveProperties(updatedUser);
       });
-      setUsers(updatedUsers);
+      const sortedUsers = updatedUsers.sort((a, b) => {
+        if (a.self) return -1;
+        if (b.self) return 1;
+        if (a.username < b.username) return -1;
+        return a.username > b.username ? 1 : 0;
+      });
+      setUsers(sortedUsers);
     };
 
     const handleUserConnected = (user) => {
@@ -63,7 +69,7 @@ export const Chat = () => {
           if (user.userID === id) {
             checkedUser.connected = false;
             //If the selected user is disconnected we need to update the bound variable
-            if (user.userID === selectedUser.userID) {
+            if (user.userID === selectedUser?.userID) {
               setSelectedUser(checkedUser);
             }
           }
@@ -133,11 +139,11 @@ export const Chat = () => {
     if (selectedUser) {
       socket.emit('private message', {
         content,
-        to: selectedUser.userID,
+        to: selectedUser?.userID,
       });
       setUsers((prevUsers) =>
         prevUsers.map((u) => {
-          if (u.userID === selectedUser.userID) {
+          if (u.userID === selectedUser?.userID) {
             const updatedMessages = [
               ...u.messages,
               { content, fromSelf: true },
