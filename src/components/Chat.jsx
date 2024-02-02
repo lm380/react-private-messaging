@@ -139,11 +139,11 @@ export const Chat = () => {
     if (selectedUser) {
       socket.emit('private message', {
         content,
-        to: selectedUser?.userID,
+        to: selectedUser.userID,
       });
       setUsers((prevUsers) =>
         prevUsers.map((u) => {
-          if (u.userID === selectedUser?.userID) {
+          if (u.userID === selectedUser.userID) {
             const updatedMessages = [
               ...u.messages,
               { content, fromSelf: true },
