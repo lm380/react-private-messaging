@@ -42,6 +42,7 @@ export const Chat = () => {
 
     const handleUsers = (socketUsers) => {
       const updatedUsers = socketUsers.map((user) => {
+        if (checkExistingUser([...users], user, user.connected)) return;
         const updatedUser = {
           ...user,
           self: user.userID === socket.id,
@@ -57,7 +58,18 @@ export const Chat = () => {
       setUsers(sortedUsers);
     };
 
+    const checkExistingUser = (usersArr, user, isConnected) => {
+      for (let i = 0; i < usersArr.length; i++) {
+        const existingUser = usersArr[i];
+        if (user.userID === existingUser.userID) {
+          existingUser.connected = isConnected;
+          return user.userID === existingUser.userID;
+        }
+      }
+    };
+
     const handleUserConnected = (user) => {
+      if (checkExistingUser([...users], user, true)) return;
       const updatedUser = initReactiveProperties(user);
       setUsers((prevUsers) => [...prevUsers, updatedUser]);
     };
@@ -121,7 +133,7 @@ export const Chat = () => {
       socket.off('user disconnected', handleUserDisconnected);
       socket.off('private message', handlePrivateMessage);
     };
-  }, [selectedUser]);
+  }, [selectedUser, users]);
 
   const onSelectUser = (user) => {
     setSelectedUser(user);
