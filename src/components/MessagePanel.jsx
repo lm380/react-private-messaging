@@ -7,6 +7,7 @@ export const MessagePanel = ({ user, submitHandler }) => {
   const [isConnected, setIsConnected] = useState(user.connected);
 
   useEffect(() => {
+    console.log('yoooo messagePanel rerendered', user.connected);
     setIsConnected(user.connected);
   }, [user]);
   const updateInput = (event) => {
