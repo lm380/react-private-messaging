@@ -34,7 +34,6 @@ export const Chat = () => {
     const initReactiveProperties = (user) => {
       return {
         ...user,
-        connected: true,
         messages: [],
         hasNewMessages: false,
       };
@@ -45,7 +44,7 @@ export const Chat = () => {
         if (checkExistingUser([...users], user, user.connected)) return;
         const updatedUser = {
           ...user,
-          self: user.userID === socket.id,
+          self: user.userID === socket.userID,
         };
         return initReactiveProperties(updatedUser);
       });
