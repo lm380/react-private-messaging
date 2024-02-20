@@ -34,14 +34,16 @@ export const Chat = () => {
     const initReactiveProperties = (user) => {
       return {
         ...user,
-        messages: [],
         hasNewMessages: false,
       };
     };
 
     const handleUsers = (socketUsers) => {
       const updatedUsers = socketUsers.map((user) => {
-        if (checkExistingUser([...users], user, user.connected)) return;
+        user.messages.forEach((message) => {
+          message.fromSelf = message.from === socket.userID;
+        });
+        if (checkExistingUser([...users], user, user.connected, true)) return;
         const updatedUser = {
           ...user,
           self: user.userID === socket.userID,
@@ -57,14 +59,26 @@ export const Chat = () => {
       setUsers(sortedUsers);
     };
 
-    const checkExistingUser = (usersArr, user, isConnected) => {
-      for (let i = 0; i < usersArr.length; i++) {
-        const existingUser = usersArr[i];
-        if (user.userID === existingUser.userID) {
-          existingUser.connected = isConnected;
-          return user.userID === existingUser.userID;
-        }
-      }
+    const checkExistingUser = (usersArr, user, isConnected, isMessages) => {
+      let isExistingUser = usersArr.some(
+        (oldUser) => user.userID === oldUser.userID
+      );
+
+      if (isExistingUser)
+        setUsers((prevUsers) => {
+          return prevUsers?.map((existingUser) => {
+            const updatedUser = { ...existingUser };
+            if (user.userID === updatedUser.userID) {
+              updatedUser.connected = isConnected;
+              if (isMessages) updatedUser.messages = user.messages;
+              if (user.userID === selectedUser?.userID) {
+                setSelectedUser(updatedUser);
+              }
+            }
+            return updatedUser;
+          });
+        });
+      return isExistingUser;
     };
 
     const handleUserConnected = (user) => {
@@ -137,11 +151,11 @@ export const Chat = () => {
   const onSelectUser = (user) => {
     setSelectedUser(user);
     setUsers((prevUsers) =>
-      prevUsers.map((u) => {
-        if (u.userID === user.userID) {
-          return { ...u, hasNewMessages: false };
+      prevUsers.map((users) => {
+        if (users.userID === user.userID) {
+          return { ...users, hasNewMessages: false };
         }
-        return u;
+        return users;
       })
     );
   };
@@ -153,17 +167,17 @@ export const Chat = () => {
         to: selectedUser.userID,
       });
       setUsers((prevUsers) =>
-        prevUsers.map((u) => {
-          if (u.userID === selectedUser.userID) {
+        prevUsers.map((users) => {
+          if (users.userID === selectedUser.userID) {
             const updatedMessages = [
-              ...u.messages,
+              ...users.messages,
               { content, fromSelf: true },
             ];
-            const enrichedUser = { ...u, messages: updatedMessages };
+            const enrichedUser = { ...users, messages: updatedMessages };
             setSelectedUser(enrichedUser);
             return enrichedUser;
           }
-          return u;
+          return users;
         })
       );
     }
